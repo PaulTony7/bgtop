@@ -1,3 +1,6 @@
+# Note
+This project is a fork of [btop](https://github.com/aristocratos/btop) aimed at adding support for displaying GPU information.
+As of now I have only added support for nvidia GPU's using nvidia-smi
 # ![btop++](Img/logo.png)
 
 <a href="https://repology.org/project/btop/versions">
