@@ -200,9 +200,7 @@ help:
 
 #? Make the Directories
 directories:
-	@$(VERBOSE) || printf "mkdir -p $(TARGETDIR)\n"
 	@mkdir -p $(TARGETDIR)
-	@$(VERBOSE) || printf "mkdir -p $(BUILDDIR)/$(PLATFORM_DIR)\n"
 	@mkdir -p $(BUILDDIR)/$(PLATFORM_DIR)
 
 #? Clean only Objects
@@ -261,7 +259,7 @@ uninstall:
 
 #? Link
 .ONESHELL:
-btop: $(OBJECTS) | directories
+btop: $(OBJECTS)
 	@sleep 0.2 2>/dev/null || true
 	@TSTAMP=$$(date +%s 2>/dev/null || echo "0")
 	@$(QUIET) || printf "\n\033[1;92mLinking and optimizing binary\033[37m...\033[0m\n"
@@ -272,7 +270,7 @@ btop: $(OBJECTS) | directories
 
 #? Compile
 .ONESHELL:
-$(BUILDDIR)/%.$(OBJEXT): $(SRCDIR)/%.$(SRCEXT) | directories
+$(BUILDDIR)/%.$(OBJEXT): $(SRCDIR)/%.$(SRCEXT)
 	@sleep 0.3 2>/dev/null || true
 	@TSTAMP=$$(date +%s 2>/dev/null || echo "0")
 	@$(QUIET) || printf "\033[1;97mCompiling $<\033[0m\n"

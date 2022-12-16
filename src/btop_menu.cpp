@@ -215,7 +215,7 @@ namespace Menu {
 			{"shown_boxes",
 				"Manually set which boxes to show.",
 				"",
-				"Available values are \"cpu mem net proc\".",
+				"Available values are \"cpu mem net proc gpu\".",
 				"Separate values with whitespace.",
 				"",
 				"Toggle between presets with key \"p\"."},

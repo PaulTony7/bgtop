@@ -313,3 +313,21 @@ namespace Proc {
                    int cur_depth, bool collapsed, const string& filter,
                    bool found = false, bool no_update = false, bool should_filter = false);
 }
+
+namespace Gpu {
+	extern string box;
+	extern int x, y, width, height;
+	extern bool shown, redraw;
+	extern string gpuName;
+	struct gpu_info {
+		deque<long long> gpu_percent;
+		deque<long long> mem_percent;
+		long long temp_max = 0;
+	};
+	
+	auto collect(bool no_update = false) -> gpu_info&;
+
+	string get_gpuName();
+	
+	string draw(const gpu_info& gpu, bool force_redraw = false, bool data_same = false);
+}

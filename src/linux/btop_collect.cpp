@@ -151,6 +151,8 @@ namespace Shared {
 		Mem::old_uptime = system_uptime();
 		Mem::collect();
 
+		Gpu::gpuName = Gpu::get_gpuName();
+		// Gpu::collect();
 	}
 
 }
@@ -2053,6 +2055,81 @@ namespace Proc {
 		numpids = (int)current_procs.size() - filter_found;
 
 		return current_procs;
+	}
+}
+
+namespace Gpu {
+	string gpuName;
+	gpu_info current_gpu;
+	const std::string WHITESPACE = " \n\r\t\f\v";
+ 
+	std::string ltrim(const std::string &s)
+	{
+		size_t start = s.find_first_not_of(WHITESPACE);
+		return (start == std::string::npos) ? "" : s.substr(start);
+	}
+	
+	std::string rtrim(const std::string &s)
+	{
+		size_t end = s.find_last_not_of(WHITESPACE);
+		return (end == std::string::npos) ? "" : s.substr(0, end + 1);
+	}
+	
+	std::string trim(const std::string &s) {
+		return rtrim(ltrim(s));
+	}
+	
+	string exec(const char* cmd)
+	{
+		array<char, 128> buffer;
+		string result = "";
+		std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
+		if(!pipe)
+			throw std::runtime_error("popen() failed");
+		while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr)
+			result += buffer.data();
+		return trim(result);
+	}
+
+	std::vector<std::string> split(const std::string& s, const char& separator)
+	{
+		std::vector<std::string> outputArray;
+		std::stringstream streamData(s);
+		std::string val;
+
+		while(std::getline(streamData, val, separator))
+			outputArray.push_back(trim(val));
+		return outputArray;
+	}
+
+	string get_gpuName() {
+		return exec("nvidia-smi --query-gpu=name --format=csv,noheader");
+	}
+
+	std::vector<std::string> getGpuInfo()
+	{
+		return split(exec("nvidia-smi --query-gpu=utilization.gpu,utilization.memory,temperature.gpu --format=csv,noheader"), ',');
+	}
+
+	auto collect(bool no_update) -> gpu_info& {
+		if (Runner::stopping or no_update) return current_gpu;
+		auto& gpu = current_gpu;
+
+		try 
+		{
+			vector<string> info = getGpuInfo();
+			gpu.gpu_percent.push_back(stoll(info[0]));
+			while (cmp_greater(gpu.gpu_percent.size(), width * 2)) gpu.gpu_percent.pop_front();
+			gpu.mem_percent.push_back(stoll(info[1]));
+			while (cmp_greater(gpu.mem_percent.size(), width * 2)) gpu.mem_percent.pop_front();
+			gpu.temp_max = stoll(info[2]);
+		}
+		catch (const std::exception& e) {
+			Logger::debug("Gpu::collect() : " + string{e.what()});
+			throw std::runtime_error("Gpu::collect() : " + string{e.what()});
+		}
+
+		return gpu;
 	}
 }
 

@@ -555,6 +555,17 @@ namespace Runner {
                         throw std::runtime_error("Proc:: -> " + string{e.what()});
 					}
 				}
+
+				//? GPU
+				if (v_contains(conf.boxes, "gpu")){
+					try {
+						auto gpu = Gpu::collect(conf.no_update);
+
+						if (not pause_output) output += Gpu::draw(gpu, conf.force_redraw, conf.no_update);
+					} catch (const std::exception& e) {
+						throw std::runtime_error("Gpu:: -> " + string{e.what()});
+					}
+				}
 			}
 			catch (const std::exception& e) {
                 Global::exit_error_msg = "Exception in runner thread -> " + string{e.what()};
@@ -584,8 +595,9 @@ namespace Runner {
 						+ Mv::to(y+9, x) + Theme::c("hi_fg") + "2" + Theme::c("main_fg") + " | Show MEM box"
 						+ Mv::to(y+10, x) + Theme::c("hi_fg") + "3" + Theme::c("main_fg") + " | Show NET box"
 						+ Mv::to(y+11, x) + Theme::c("hi_fg") + "4" + Theme::c("main_fg") + " | Show PROC box"
-						+ Mv::to(y+12, x-2) + Theme::c("hi_fg") + "esc" + Theme::c("main_fg") + " | Show menu"
-						+ Mv::to(y+13, x) + Theme::c("hi_fg") + "q" + Theme::c("main_fg") + " | Quit";
+						+ Mv::to(y+12, x) + Theme::c("hi_fg") + "5" + Theme::c("main_fg") + " | Show GPU box"
+						+ Mv::to(y+13, x-2) + Theme::c("hi_fg") + "esc" + Theme::c("main_fg") + " | Show menu"
+						+ Mv::to(y+14, x) + Theme::c("hi_fg") + "q" + Theme::c("main_fg") + " | Quit";
 				}
 				output += empty_bg;
 			}
