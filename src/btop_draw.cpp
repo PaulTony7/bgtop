@@ -1584,8 +1584,8 @@ namespace Gpu {
 		if (redraw)
 		{
 			out = box;
-			graph_gpu = Draw::Graph{width - b_width - 2, (height - 2) / 2, "cpu", gpu.gpu_percent, "default", false, true};
-			graph_mem = Draw::Graph{width - b_width - 2, (height - 2) / 2, "upload", gpu.mem_percent, "default", false, true};
+			graph_gpu = Draw::Graph{width - b_width - 2, (height - 2) / 2, "cpu", gpu.gpu_percent, "default", false, true, 100};
+			graph_mem = Draw::Graph{width - b_width - 2, (height - 2) / 2, "upload", gpu.mem_percent, "default", false, true, 100};
 		}
 		//Graphs
 		out += Fx::ub + Mv::to(y + 1, x + 1) + graph_gpu(gpu.gpu_percent, (data_same or redraw));
